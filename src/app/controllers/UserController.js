@@ -21,6 +21,33 @@ class UserController{
             return res.json({msg: "Cadastrado com sucesso", email})
 
     }
+
+    async update(req, res){
+        const {oldPassword, email} = req.body;
+        
+        const user = await User.findByPk(req.userId);
+        if(!user){
+            return res.status(401).json({error: "Usuário sem permissão"});
+        }
+
+        if(email && email !== user.email){
+            const userExist = await User.findOne({where:{email}})
+            if(userExist){
+                return res.status(401).json({error: "E-mail já cadastrado"});
+            }
+            
+        }
+
+        if(oldPassword && !(await user.checkPassword(oldPassword))){
+            return res.status(401).json({ error: 'Senha incorreta' });
+        }
+
+        const {id, name, email:userEmail} = await user.update(req.body);
+
+
+        return res.json({ id, name, email:userEmail})
+    }
+    
 }
 
 export default new UserController();
