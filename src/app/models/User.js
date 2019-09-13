@@ -17,6 +17,12 @@ class User extends Model {
         });
     }
 
+    checkPassword(password){
+        if(password){
+            return bcryptjs.compare(password, this.password_hash);
+        }
+    }
+
 
 }
 
